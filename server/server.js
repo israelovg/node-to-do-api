@@ -68,8 +68,9 @@ app.patch("/todos/:id",(req,res)=>{
     {
         return res.status(404).send();
     }
-    //we retreve only spesific params from body
+    //we retreave only spesific params from body
     var body=_.pick(req.body,['text','completed']);
+    console.log(body);
     if(_.isBoolean(body.completed) && body.completed)
     {
        body.completedAt=new Date().getTime();
@@ -79,7 +80,7 @@ app.patch("/todos/:id",(req,res)=>{
       body.completed=false;
       body.completedAt=null;
     }
-    Todo.findByIdAndUpdate(id,{$set:body,new:true}).then((todo)=>{
+    Todo.findByIdAndUpdate(id,body,{new:true}).then((todo)=>{
         if(!todo)
         {
             return res.status(404);

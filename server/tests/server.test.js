@@ -10,7 +10,9 @@ const todos =
    _id:new ObjectId() 
  },
  { text: "Second test todo",
-  _id:new ObjectId() 
+  _id:new ObjectId(),
+  completed:true,
+  completedAt:333
  }];
 
 beforeEach((done) => {
@@ -139,5 +141,46 @@ describe('DELETE /todos/:id',()=>{
         .delete(`/todos/123`)
         .expect(404)
         .end(done);
+    });
+});
+describe("PATCH /todos/:id",()=>{
+    it("should update todo is completed",(done)=>{
+        var text="update comleted to true";
+        request(app)
+        .patch(`/todos/${todos[0]._id.toHexString()}`)
+        .send({text,completed:true})
+        .expect(200)
+        .expect((res)=>{
+            expect(res.body.todo.text).toBe(text);
+            expect(res.body.todo.completed).toBe(true);
+            expect(typeof res.body.todo.completedAt).toBe("number");
+        })
+        .end((err,res)=>{
+            if(err)
+            {
+                return done(err);
+            }
+         done();
+        });
+
+    });
+    it("should update todo is not completed",(done)=>{
+        var text="update comleted to false";
+        request(app)
+        .patch(`/todos/${todos[1]._id.toHexString()}`)
+        .send({text,completed:false})
+        .expect(200)
+        .expect((res)=>{
+            expect(res.body.todo.text).toBe(text,"text is not equal");
+            expect(res.body.todo.completed).toBe(false,"text is not equal");
+            expect(res.body.todo.completedAt).toBeFalsy();
+        })
+        .end((err,res)=>{
+            if(err)
+            {
+                return done(err);
+            }
+         done();
+        });
     });
 });
